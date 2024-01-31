@@ -1,0 +1,7 @@
+stages:
+  download:
+    cmd: curl https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip --output data\chinook.zip
+    deps:
+      - https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
+    outs:
+      - data\chinook.zip
