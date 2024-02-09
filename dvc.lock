@@ -1,0 +1,27 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: curl https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
+      --output data\chinook.zip
+    deps:
+    - path: https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
+      hash: md5
+      checksum: '210225235023226908972304917049024106793'
+      size: 305596
+    outs:
+    - path: data\chinook.zip
+      hash: md5
+      md5: 95b7b87de0ec059a407da6f7dc2888f7
+      size: 305596
+  unzip:
+    cmd: tar -xf data\chinook.zip -C data
+    deps:
+    - path: data\chinook.zip
+      hash: md5
+      md5: 95b7b87de0ec059a407da6f7dc2888f7
+      size: 305596
+    outs:
+    - path: data\chinook.db
+      hash: md5
+      md5: f2dd976ac500525eb862a008ba21609c
+      size: 884736
