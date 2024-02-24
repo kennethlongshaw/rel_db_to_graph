@@ -5,3 +5,16 @@ stages:
       - https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
     outs:
       - data\chinook.zip
+  unzip:
+    cmd: tar -xf data\chinook.zip -C data
+    deps:
+      - data\chinook.zip
+    outs:
+      - data\chinook.db
+  convert_to_graph:
+    cmd: python convert_to_graph.py
+    deps:
+      - convert_to_graph.py
+      - data\chinook.db
+    outs:
+      - data\graph.bin
