@@ -4,6 +4,7 @@ from torch_geometric.data import HeteroData
 from torch_geometric.utils import degree
 import torch
 import pandas as pd
+from torch.nn.functional import normalize
 
 CONNECTION = sqlite3.connect(r'data/chinook.db')
 
@@ -219,17 +220,18 @@ def add_degree(hgraph):
                 # pos will be 0 or 2, but needs to be 0 or 1
                 edge_pos = min(edge.index(node), 1)
                 edge_index = hgraph[edge].edge_index[edge_pos]
-                degrees.append(pl.DataFrame(edge_index.numpy()).groupby('column_0').count())
+                degrees.append(pl.DataFrame(edge_index.numpy()).group_by('column_0').len())
         total_degrees = pl.concat(degrees).group_by('column_0').sum()
         degree_mapping = {k: v for k, v in total_degrees.iter_rows()}
         degree_tensor = torch.FloatTensor([degree_mapping[i] if i in degree_mapping else 0
                                            for i in range(hgraph[node].num_nodes)
                                            ])
         degree_tensor = torch.unsqueeze(degree_tensor, dim=1)
-        if hgraph[node].x == {}:
-            hgraph[node].x = degree_tensor
-        else:
+        if hasattr(hgraph[node], 'x'):
             hgraph[node].x = torch.cat([hgraph[node].x, degree_tensor], dim=1)
+        else:
+            hgraph[node].x = degree_tensor
+        del hgraph[node].num_nodes
 
     return hgraph
 
@@ -238,6 +240,7 @@ def main():
     edge_data = get_edge_data(objs['edges'])
     node_data = get_node_data(objs['nodes'])
     graph = format_graph(node_data=node_data, edge_data=edge_data)
+    graph = add_degree(graph)
     print(graph)
     torch.save(graph, r'data/graph.bin')
 
