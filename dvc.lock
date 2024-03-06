@@ -25,3 +25,19 @@ stages:
       hash: md5
       md5: f2dd976ac500525eb862a008ba21609c
       size: 884736
+  convert_to_graph:
+    cmd: python convert_to_graph.py
+    deps:
+    - path: convert_to_graph.py
+      hash: md5
+      md5: 93d7ac612da8e043d360559ca808f328
+      size: 10588
+    - path: data\chinook.db
+      hash: md5
+      md5: f2dd976ac500525eb862a008ba21609c
+      size: 884736
+    outs:
+    - path: data\graph.bin
+      hash: md5
+      md5: db7e4ce3dc8660de94fee9e7314d613a
+      size: 883069

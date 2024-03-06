@@ -1,10 +1,9 @@
 import polars as pl
 import sqlite3
 from torch_geometric.data import HeteroData
-from torch_geometric.utils import degree
 import torch
 import pandas as pd
-from torch.nn.functional import normalize
+from torch_geometric.utils import to_undirected
 
 CONNECTION = sqlite3.connect(r'data/chinook.db')
 
@@ -211,7 +210,7 @@ def format_graph(node_data, edge_data) -> HeteroData:
     return hgraph
 
 
-def add_degree(hgraph):
+def add_degree(hgraph: HeteroData):
     edges = hgraph.metadata()[1]
     for node in hgraph.metadata()[0]:
         degrees = []
@@ -235,12 +234,30 @@ def add_degree(hgraph):
 
     return hgraph
 
+
+def convert_to_undirected(hgraph: HeteroData):
+    for edge in hgraph.metadata()[1]:
+        hgraph[edge].edge_index = to_undirected(hgraph[edge].edge_index)
+
+    return hgraph
+
+
+def reverse(hgraph: HeteroData):
+    for edge in hgraph.metadata()[1]:
+        if edge[0] != edge[2]:
+            reverse_edge = (edge[2], edge[1], edge[0])
+            hgraph[reverse_edge].edge_index = torch.stack([hgraph[edge].edge_index[1], hgraph[edge].edge_index[0]])
+
+    return hgraph
+
 def main():
     objs = determine_nodes_and_edges()
     edge_data = get_edge_data(objs['edges'])
     node_data = get_node_data(objs['nodes'])
     graph = format_graph(node_data=node_data, edge_data=edge_data)
+    # add degree before converting edges to undirected
     graph = add_degree(graph)
+    graph = reverse(graph)
     print(graph)
     torch.save(graph, r'data/graph.bin')
 

@@ -18,3 +18,9 @@ stages:
       - data\chinook.db
     outs:
       - data\graph.bin
+
+  train:
+    cmd: python train.py
+    deps:
+      - data\graph.bin
+
