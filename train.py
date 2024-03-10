@@ -1,8 +1,7 @@
 import pytorch_lightning as pl
 import torch
-
 from dataloader import HeteroGraphLinkDataModule, SplitConfig
-from model import LinkPredModel, GATConfig
+from model import LinkPredModel, GATConfig, TrainConfig
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 
@@ -13,38 +12,47 @@ def train():
     data = torch.load(f'data/graph.bin')
     target_edge = ('playlists', 'hasTrack', 'tracks')
 
-    num_layers = 3
-    num_neighbors = 10
+    reverse_edge = (target_edge[2], 'REVERSE_' + target_edge[1], target_edge[0])
+    if reverse_edge not in data.metadata()[1]:
+        reverse_edge = None
 
     split_config = SplitConfig(is_undirected=False,
                                edge_types=target_edge,
+                               rev_edge_types=reverse_edge,
                                num_val=.1,
                                num_test=.00,
                                add_negative_train_samples=True,
                                )
 
-    datamodule = HeteroGraphLinkDataModule(data=data,
-                                           target_edge=target_edge,
-                                           split_config=split_config,
-                                           batch_size=32,
-                                           num_neighbors=[num_neighbors] * num_layers,
-                                           shuffle=True
-                                           )
+    train_cfg = TrainConfig(num_layers=3,
+                            num_neighbors=30,
+                            dropout=.2,
+                            learning_rate=.0001,
+                            batch_size=64,
+                            epochs=20
+                            )
 
     gat_config = GATConfig(
         in_channels=(-1, -1),
         hidden_channels=10,
-        num_layers=num_layers,
+        num_layers=train_cfg.num_layers,
         dropout=.1,
         norm='BatchNorm',
         add_self_loops=False,
         v2=True
     )
 
+    datamodule = HeteroGraphLinkDataModule(data=data,
+                                           target_edge=target_edge,
+                                           split_config=split_config,
+                                           batch_size=train_cfg.batch_size,
+                                           num_neighbors=train_cfg.depth_sizes,
+                                           shuffle=True
+                                           )
+
     model = LinkPredModel(target_edge=target_edge,
                           metadata=data.metadata(),
-                          gnn_kwargs=gat_config,
-                          lr=0.0001
+                          gnn_kwargs=gat_config
                           )
 
     score = 'val_loss'
