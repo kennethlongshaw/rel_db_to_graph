@@ -222,7 +222,9 @@ def add_degree(hgraph: HeteroData):
                 degrees.append(pl.DataFrame(edge_index.numpy()).group_by('column_0').len())
         total_degrees = pl.concat(degrees).group_by('column_0').sum()
         degree_mapping = {k: v for k, v in total_degrees.iter_rows()}
-        degree_tensor = torch.FloatTensor([degree_mapping[i] if i in degree_mapping else 0
+
+        # plus 1 and min degree of 1 for relationship with self
+        degree_tensor = torch.FloatTensor([degree_mapping[i] + 1 if i in degree_mapping else 1
                                            for i in range(hgraph[node].num_nodes)
                                            ])
         degree_tensor = torch.unsqueeze(degree_tensor, dim=1)
@@ -250,14 +252,24 @@ def reverse(hgraph: HeteroData):
 
     return hgraph
 
+def add_self_loop_edges(hgraph: HeteroData):
+    for node in hgraph.metadata()[0]:
+        node_cnt = hgraph[node].x.shape[0]
+        node_idx = torch.tensor(range(0, node_cnt))
+        hgraph[node, 'SELF_LOOP', node].edge_index = torch.stack([node_idx, node_idx])
+    return hgraph
+
+
 def main():
     objs = determine_nodes_and_edges()
     edge_data = get_edge_data(objs['edges'])
     node_data = get_node_data(objs['nodes'])
     graph = format_graph(node_data=node_data, edge_data=edge_data)
-    # add degree before converting edges to undirected
+
+    # add degree before adding other edges
     graph = add_degree(graph)
     graph = reverse(graph)
+    graph = add_self_loop_edges(graph)
     print(graph)
     torch.save(graph, r'data/graph.bin')
 

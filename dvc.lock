@@ -6,7 +6,7 @@ stages:
     deps:
     - path: https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
       hash: md5
-      checksum: '210225235023226908972304917049024106793'
+      checksum: '166007437711409482418900069603611846208'
       size: 305596
     outs:
     - path: data\chinook.zip
@@ -30,8 +30,8 @@ stages:
     deps:
     - path: convert_to_graph.py
       hash: md5
-      md5: 93d7ac612da8e043d360559ca808f328
-      size: 10588
+      md5: bd88c0d6585a5b472fc2a85842e146b4
+      size: 10982
     - path: data\chinook.db
       hash: md5
       md5: f2dd976ac500525eb862a008ba21609c
@@ -39,5 +39,12 @@ stages:
     outs:
     - path: data\graph.bin
       hash: md5
-      md5: db7e4ce3dc8660de94fee9e7314d613a
-      size: 883069
+      md5: 653edb7e63b1cf74066358a68a5f8ea6
+      size: 996043
+  train:
+    cmd: python train.py
+    deps:
+    - path: data\graph.bin
+      hash: md5
+      md5: 653edb7e63b1cf74066358a68a5f8ea6
+      size: 996043

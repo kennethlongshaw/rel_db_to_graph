@@ -6,6 +6,7 @@ from typing import Optional, Callable, Any
 from dataclasses import dataclass, asdict
 from torchmetrics import Accuracy, Precision, Recall, F1Score
 
+
 @dataclass
 class GATConfig:
     in_channels: int | tuple
@@ -48,7 +49,7 @@ class LinkPredModel(pl.LightningModule):
                  target_edge: tuple[str, str, str],
                  metadata,
                  gnn_kwargs: GATConfig,
-                 train_cfg: TrainConfig
+                 learning_rate: float
                  ):
         super().__init__()
         self.encoder = to_hetero(GAT(**asdict(gnn_kwargs)),
@@ -56,8 +57,7 @@ class LinkPredModel(pl.LightningModule):
                                  aggr='sum')
         self.decoder = InnerProductDecoder()
         self.target_edge = target_edge
-        self.train_cfg = train_cfg
-
+        self.learning_rate = learning_rate
 
         # Initialize the metric objects
         self.accuracy = Accuracy(task="binary")
@@ -127,4 +127,4 @@ class LinkPredModel(pl.LightningModule):
         return self.model_step(batch, 'test')
 
     def configure_optimizers(self):
-        return torch.optim.AdamW(self.parameters(), lr=self.train_cfg.learning_rate)
+        return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)

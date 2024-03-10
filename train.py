@@ -3,6 +3,7 @@ import torch
 from dataloader import HeteroGraphLinkDataModule, SplitConfig
 from model import LinkPredModel, GATConfig, TrainConfig
 from pytorch_lightning.callbacks import ModelCheckpoint
+from dvclive.lightning import DVCLiveLogger
 
 
 def train():
@@ -52,20 +53,23 @@ def train():
 
     model = LinkPredModel(target_edge=target_edge,
                           metadata=data.metadata(),
-                          gnn_kwargs=gat_config
+                          gnn_kwargs=gat_config,
+                          learning_rate=train_cfg.learning_rate
                           )
 
-    score = 'val_loss'
+    score = 'val_accuracy'
     checkpoint_callback = ModelCheckpoint(monitor=score,
-                                          mode='min',
+                                          mode='max',
                                           verbose=True,
                                           )
 
+    logger = DVCLiveLogger()
+
     trainer = pl.Trainer(deterministic=True,
-                         max_epochs=10,
+                         max_epochs=train_cfg.epochs,
                          enable_progress_bar=True,
-                         accelerator='cuda',
-                         # precision='bf16-true',
+                         accelerator='auto',
+                         logger=logger,
                          callbacks=[checkpoint_callback],
                          )
 
@@ -73,6 +77,7 @@ def train():
 
     score = checkpoint_callback.best_model_score
     print(f'Best score was {score}')
+    logger.log_metrics({f'best_{score}': score})
 
 
 if __name__ == '__main__':

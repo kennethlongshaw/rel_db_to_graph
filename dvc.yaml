@@ -1,26 +1,34 @@
 stages:
   download:
-    cmd: curl https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip --output data\chinook.zip
+    cmd: curl https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
+      --output data\chinook.zip
     deps:
-      - https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
+    - https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip
     outs:
-      - data\chinook.zip
+    - data\chinook.zip
+
   unzip:
     cmd: tar -xf data\chinook.zip -C data
     deps:
-      - data\chinook.zip
+    - data\chinook.zip
     outs:
-      - data\chinook.db
+    - data\chinook.db
+
   convert_to_graph:
     cmd: python convert_to_graph.py
     deps:
-      - convert_to_graph.py
-      - data\chinook.db
+    - convert_to_graph.py
+    - data\chinook.db
     outs:
-      - data\graph.bin
+    - data\graph.bin
 
   train:
     cmd: python train.py
     deps:
-      - data\graph.bin
+    - data\graph.bin
 
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step
