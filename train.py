@@ -4,7 +4,7 @@ from dataloader import HeteroGraphLinkDataModule, SplitConfig
 from model import LinkPredModel, GATConfig, TrainConfig
 from pytorch_lightning.callbacks import ModelCheckpoint
 from dvclive.lightning import DVCLiveLogger
-
+from dvc.api import params_show
 
 def train():
     pl.seed_everything(seed=42, workers=True)
@@ -28,8 +28,8 @@ def train():
     train_cfg = TrainConfig(num_layers=3,
                             num_neighbors=30,
                             dropout=.2,
-                            learning_rate=.0001,
-                            batch_size=128,
+                            learning_rate=params_show()['train']['learning_rate'],
+                            batch_size=params_show()['train']['batch_size'],
                             epochs=20
                             )
 

@@ -26,6 +26,8 @@ stages:
     cmd: python train.py
     deps:
     - data\graph.bin
+    params:
+      - train
 
 metrics:
 - dvclive/metrics.json
