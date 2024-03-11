@@ -48,3 +48,8 @@ stages:
       hash: md5
       md5: 653edb7e63b1cf74066358a68a5f8ea6
       size: 996043
+    params:
+      params.yaml:
+        train:
+          batch_size: 128
+          learning_rate: 0.0001
