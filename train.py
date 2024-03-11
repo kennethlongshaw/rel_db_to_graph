@@ -35,7 +35,7 @@ def train():
 
     gat_config = GATConfig(
         in_channels=(-1, -1),
-        hidden_channels=10,
+        hidden_channels=params_show()['trian']['hidden_channels'],
         num_layers=train_cfg.num_layers,
         dropout=.1,
         norm='BatchNorm',

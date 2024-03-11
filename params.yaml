@@ -1,3 +1,4 @@
 train:
-  batch_size: 64
-  learning_rate: .0001
+  batch_size: 384
+  learning_rate: .00001
+  hidden_channels: 20
