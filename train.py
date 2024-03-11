@@ -29,7 +29,7 @@ def train():
                             num_neighbors=30,
                             dropout=.2,
                             learning_rate=.0001,
-                            batch_size=64,
+                            batch_size=128,
                             epochs=20
                             )
 
