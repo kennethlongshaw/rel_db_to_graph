@@ -22,7 +22,7 @@ def train():
                                rev_edge_types=reverse_edge,
                                num_val=.1,
                                num_test=.00,
-                               add_negative_train_samples=True,
+                               add_negative_train_samples=False,
                                )
 
     train_cfg = TrainConfig(num_layers=3,
@@ -78,6 +78,7 @@ def train():
     score = checkpoint_callback.best_model_score
     print(f'Best score was {score}')
     logger.log_metrics({f'best_{score}': score})
+
 
 
 if __name__ == '__main__':

@@ -70,12 +70,14 @@ def split(data: HeteroData,
 
     train_loader_args = {
         'batch_size': batch_size,
-        'num_neighbors': num_neighbors
+        'num_neighbors': num_neighbors,
+        'neg_sampling': 'binary'
     }
 
     nontrain_loader_args = {
         'batch_size': batch_size,
-        'num_neighbors': [-1] * len(num_neighbors)
+        'num_neighbors': [-1] * len(num_neighbors),
+        'neg_sampling': 'binary'
     }
 
     train_loader = LinkNeighborLoader(train_data,
