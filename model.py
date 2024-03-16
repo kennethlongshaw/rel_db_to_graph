@@ -44,6 +44,43 @@ class TrainConfig:
         return [self.num_neighbors] * self.num_layers
 
 
+class EdgeDecoder(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, z_dict: dict, edge_label_index: torch.Tensor, target_edge: tuple) -> torch.Tensor:
+        """
+        Decodes edges by calculating the dot product between embeddings of node pairs
+        and then applying a sigmoid function to map the scores to probabilities.
+
+        Args:
+            z_dict (dict): Dictionary of node embeddings, keyed by node type.
+            edge_label_index (Tensor): The indices of the edges to be decoded, shape [2, num_edges].
+            target_edge (tuple): A tuple representing the edge type in the form (source_node_type, relation_type, target_node_type).
+
+        Returns:
+            Tensor: Probabilities for each edge, indicating the likelihood of edge existence.
+        """
+
+        # Unpack the source and target node types from the edge type
+        source_node_type, _, target_node_type = target_edge
+
+        # Extract source and target indices for edges
+        src_indices, tgt_indices = edge_label_index
+
+        # Retrieve the embeddings for the source and target nodes
+        src_embeddings = z_dict[source_node_type][src_indices]
+        tgt_embeddings = z_dict[target_node_type][tgt_indices]
+
+        # Compute the dot product between source and target embeddings
+        edge_scores = (src_embeddings * tgt_embeddings).sum(dim=1)
+
+        # Apply sigmoid to map scores to probabilities
+        edge_probabilities = torch.sigmoid(edge_scores)
+
+        return edge_probabilities
+
+
 class LinkPredModel(pl.LightningModule):
     def __init__(self,
                  target_edge: tuple[str, str, str],
@@ -55,7 +92,7 @@ class LinkPredModel(pl.LightningModule):
         self.encoder = to_hetero(GAT(**asdict(gnn_kwargs)),
                                  metadata=metadata,
                                  aggr='sum')
-        self.decoder = InnerProductDecoder()
+        self.decoder = EdgeDecoder()
         self.target_edge = target_edge
         self.learning_rate = learning_rate
 
@@ -63,22 +100,17 @@ class LinkPredModel(pl.LightningModule):
         self.accuracy = Accuracy(task="binary")
         self.precision = Precision(task="binary")
         self.recall = Recall(task="binary")
-        self.f1_score = F1Score(task="binary")
+        # self.f1_score = F1Score(task="binary")
 
     def forward(self, batch):
         # Encode the graph data to get node embeddings
         z_dict = self.encoder(batch.x_dict, batch.edge_index_dict)
 
-        edge_label_index = batch[self.target_edge].edge_label_index
-
-        # Extract embeddings for the source and target node types involved in the target edge
-        source_node_type, _, target_node_type = self.target_edge
-        z = torch.cat([z_dict[source_node_type], z_dict[target_node_type]], dim=0)
-
-        # Predict the presence of edges
-        edge_probabilities = self.decoder(z, edge_label_index, sigmoid=True)
-
-        return edge_probabilities
+        # Predict probabilities for edge labels
+        return self.decoder(z_dict=z_dict,
+                            edge_label_index=batch.edge_label_index,
+                            target_edge=self.target_edge
+                            )
 
     def model_step(self, batch, step_name):
         pred = self(batch)
@@ -107,7 +139,7 @@ class LinkPredModel(pl.LightningModule):
             self.log(name=f'{step_name}_accuracy', value=self.accuracy, **log_args)
             self.log(name=f'{step_name}_precision', value=self.precision, **log_args)
             self.log(name=f'{step_name}_recall', value=self.recall, **log_args)
-            self.log(name=f'{step_name}_f1_score', value=self.f1_score, **log_args)
+            # self.log(name=f'{step_name}_f1_score', value=self.f1_score, **log_args)
 
         return loss
 
@@ -115,7 +147,7 @@ class LinkPredModel(pl.LightningModule):
         self.log(name='val_accuracy_epoch', value=self.accuracy.compute())
         self.log(name='val_precision_epoch', value=self.precision.compute())
         self.log(name='val_recall_epoch', value=self.recall.compute())
-        self.log(name='val_f1_score_epoch', value=self.f1_score.compute())
+        # self.log(name='val_f1_score_epoch', value=self.f1_score.compute())
 
     def training_step(self, batch):
         return self.model_step(batch, 'train')

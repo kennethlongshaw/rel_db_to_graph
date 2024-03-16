@@ -5,9 +5,16 @@ from model import LinkPredModel, GATConfig, TrainConfig
 from pytorch_lightning.callbacks import ModelCheckpoint
 from dvclive.lightning import DVCLiveLogger
 from dvc.api import params_show
-
+import numpy as np
+import random
 def train():
-    pl.seed_everything(seed=42, workers=True)
+    seed_value = 42
+    torch.manual_seed(seed_value)
+    torch.cuda.manual_seed(seed_value)
+    torch.cuda.manual_seed_all(seed_value)  # if you are using multi-GPU.
+    np.random.seed(seed_value)  # if NumPy is used
+    random.seed(seed_value)  # if Python's `random` is used
+    pl.seed_everything(seed=seed_value, workers=True)
     torch.backends.cuda.matmul.allow_tf32 = True  # allow tf32 on matmul
     torch.backends.cudnn.allow_tf32 = True  # allow tf32 on cudnn
     data = torch.load(f'data/graph.bin')
@@ -22,12 +29,13 @@ def train():
                                rev_edge_types=reverse_edge,
                                num_val=.1,
                                num_test=.00,
-                               add_negative_train_samples=False,
+                               add_negative_train_samples=True,
+                               disjoint_train_ratio=.2
                                )
 
     train_cfg = TrainConfig(num_layers=3,
-                            num_neighbors=30,
-                            dropout=.2,
+                            num_neighbors=10,
+                            dropout=.1,
                             learning_rate=params_show()['train']['learning_rate'],
                             batch_size=params_show()['train']['batch_size'],
                             epochs=20
