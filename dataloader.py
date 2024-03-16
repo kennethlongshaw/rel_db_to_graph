@@ -16,7 +16,7 @@ def make_link_data_loader(data: HeteroData,
                           split_config: SplitConfig,
                           batch_size: int,
                           num_neighbors: list[int],
-                          ) -> LightningDataModule:
+                          ):
     assert target_edge in data.metadata()[1], f"Target edge {target_edge} not present in data set provided"
     if split_config.rev_edge_types:
         if isinstance(split_config.rev_edge_types, tuple):

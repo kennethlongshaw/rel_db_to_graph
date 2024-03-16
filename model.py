@@ -108,7 +108,7 @@ class LinkPredModel(pl.LightningModule):
 
         # Predict probabilities for edge labels
         return self.decoder(z_dict=z_dict,
-                            edge_label_index=batch.edge_label_index,
+                            edge_label_index=batch[self.target_edge].edge_label_index,
                             target_edge=self.target_edge
                             )
 
@@ -129,7 +129,7 @@ class LinkPredModel(pl.LightningModule):
             self.accuracy(pred, target)
             self.precision(pred, target)
             self.recall(pred, target)
-            self.f1_score(pred, target)
+            #self.f1_score(pred, target)
 
             log_args = {'batch_size': batch_size,
                         'on_epoch': True,

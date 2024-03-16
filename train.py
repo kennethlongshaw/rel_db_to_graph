@@ -69,6 +69,7 @@ def train():
     checkpoint_callback = ModelCheckpoint(monitor=score,
                                           mode='max',
                                           verbose=True,
+                                          save_top_k=1
                                           )
 
     logger = DVCLiveLogger()
