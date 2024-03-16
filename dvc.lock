@@ -30,8 +30,8 @@ stages:
     deps:
     - path: convert_to_graph.py
       hash: md5
-      md5: bd88c0d6585a5b472fc2a85842e146b4
-      size: 10982
+      md5: b67d4ff35351a5013621a84233c6602d
+      size: 10997
     - path: data\chinook.db
       hash: md5
       md5: f2dd976ac500525eb862a008ba21609c
@@ -39,15 +39,15 @@ stages:
     outs:
     - path: data\graph.bin
       hash: md5
-      md5: 653edb7e63b1cf74066358a68a5f8ea6
-      size: 996043
+      md5: 88b813b3a7be9cbf0c0c2b1829969d50
+      size: 996299
   train:
     cmd: python train.py
     deps:
     - path: data\graph.bin
       hash: md5
-      md5: 653edb7e63b1cf74066358a68a5f8ea6
-      size: 996043
+      md5: 88b813b3a7be9cbf0c0c2b1829969d50
+      size: 996299
     params:
       params.yaml:
         train:

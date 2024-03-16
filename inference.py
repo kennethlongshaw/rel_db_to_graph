@@ -1,4 +1,4 @@
-#import streamlit as st
+import streamlit as st
 import torch
 from model import LinkPredModel, GATConfig
 from dvc.api import params_show
@@ -10,7 +10,7 @@ CONNECTION = sqlite3.connect(r'data/chinook.db')
 
 #@st.cache_resource
 def load_model(data):
-    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=11-step=588-v1.ckpt'
+    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=12-step=637.ckpt'
     checkpoint = torch.load(checkpoint_path)
 
     target_edge = ('playlists', 'hasTrack', 'tracks')
@@ -63,7 +63,7 @@ def predict_songs(data, track_ids: list, top_k: int):
         dim=1)
 
     # Add edge label index for what to predict, use all other songs
-    songs_not_on_playlist = list(set(range(0, data['tracks'].shape[0])).difference(set(track_ids)))
+    songs_not_on_playlist = list(set(range(0, data['tracks'].x.shape[0])).difference(set(track_ids)))
     source = torch.tensor([new_playlist_id for _ in range(len(songs_not_on_playlist))])
     target = torch.tensor(songs_not_on_playlist)
     data['playlists', 'hasTrack', 'tracks'].edge_label_index = torch.stack([source, target])
@@ -71,10 +71,7 @@ def predict_songs(data, track_ids: list, top_k: int):
     # move to gpu for inference
     data.to(model.device)
 
-    # predict
-    preds = model(data)
-
-    return preds
+    return model(data).topk(top_k)
 
 
 #@st.cache_data
@@ -98,13 +95,20 @@ def main():
     # select new songs
     with st.sidebar:
         selected_tracks = st.multiselect(label='Start a playlist', options=track_list)
+        track_ids = [track_list.index(song) for song in selected_tracks]
+        st.session_state['preds'] = None
+        start = st.button('Predict')
+        if start:
+            st.session_state['preds'] = predict_songs(data=load_data(), track_ids=track_ids, top_k=10)
 
-    track_ids = [track_list.index(song) for song in selected_tracks]
 
     st.write(selected_tracks)
-    st.write(track_ids)
+    if st.session_state['preds']:
+        new_tracks = tracks.with_row_index(name='id').filter(pl.col('id').is_in(st.session_state['preds'].indices.tolist()))
+        st.write(new_tracks['FullName'].to_list())
 
-    predict_songs(data=load_data(), track_ids=track_ids, top_k=10)
+
+
 
 
 if __name__ == '__main__':

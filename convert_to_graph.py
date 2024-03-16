@@ -247,10 +247,11 @@ def convert_to_undirected(hgraph: HeteroData):
 def reverse(hgraph: HeteroData):
     for edge in hgraph.metadata()[1]:
         if edge[0] != edge[2]:
-            reverse_edge = (edge[2], edge[1], edge[0])
+            reverse_edge = (edge[2], 'REVERSE_' + edge[1], edge[0])
             hgraph[reverse_edge].edge_index = torch.stack([hgraph[edge].edge_index[1], hgraph[edge].edge_index[0]])
 
     return hgraph
+
 
 def add_self_loop_edges(hgraph: HeteroData):
     for node in hgraph.metadata()[0]:
