@@ -18,10 +18,12 @@ def make_link_data_loader(data: HeteroData,
                           num_neighbors: list[int],
                           ):
     assert target_edge in data.metadata()[1], f"Target edge {target_edge} not present in data set provided"
+
     if split_config.rev_edge_types:
         if isinstance(split_config.rev_edge_types, tuple):
             assert split_config.rev_edge_types in data.metadata()[
                 1], f"Reverse target edge {split_config.rev_edge_types} not present in data set provided"
+
         elif isinstance(split_config.rev_edge_types, list):
             for rev_edge in split_config.rev_edge_types:
                 assert rev_edge in data.metadata()[1], \

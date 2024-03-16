@@ -1,4 +1,5 @@
-from torch_geometric.nn import GAT, to_hetero, InnerProductDecoder
+from torch_geometric.nn import GAT, to_hetero
+from torch_geometric.explain import Explainer, ExplainerConfig, AttentionExplainer
 import pytorch_lightning as pl
 from torch.nn.functional import binary_cross_entropy
 import torch
@@ -160,3 +161,28 @@ class LinkPredModel(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
+
+    def explain(self, batch):
+        """
+        Generates explanations for the given batch.
+
+        Args:
+            batch: The batch of data for which to generate explanations.
+
+        Returns:
+            Explanations for the model's predictions on the given batch.
+        """
+
+
+        # Encode the graph data to get node embeddings
+        z_dict = self.encoder(batch.x_dict, batch.edge_index_dict)
+
+        # Assume batch contains the necessary edge_label_index for the target edge
+        edge_label_index = batch[self.target_edge].edge_label_index
+
+        # Generate explanations
+        explanations = self.explainer(z_dict=z_dict,
+                                      edge_index_dict=batch.edge_index_dict,
+                                      edge_label_index=edge_label_index)
+
+        return explanations
