@@ -7,7 +7,10 @@ from dvclive.lightning import DVCLiveLogger
 from dvc.api import params_show
 import numpy as np
 import random
-def train():
+
+
+def setup():
+    # seed things for reproducibility
     seed_value = 42
     torch.manual_seed(seed_value)
     torch.cuda.manual_seed(seed_value)
@@ -17,6 +20,10 @@ def train():
     pl.seed_everything(seed=seed_value, workers=True)
     torch.backends.cuda.matmul.allow_tf32 = True  # allow tf32 on matmul
     torch.backends.cudnn.allow_tf32 = True  # allow tf32 on cudnn
+
+
+def train():
+    setup()
     data = torch.load(f'data/graph.bin')
     target_edge = ('playlists', 'hasTrack', 'tracks')
 
@@ -87,7 +94,6 @@ def train():
     score = checkpoint_callback.best_model_score
     print(f'Best score was {score}')
     logger.log_metrics({f'best_{score}': score})
-
 
 
 if __name__ == '__main__':
