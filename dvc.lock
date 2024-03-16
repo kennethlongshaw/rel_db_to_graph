@@ -53,4 +53,4 @@ stages:
         train:
           batch_size: 64
           learning_rate: 0.001
-          hidden_channels: 55
+          hidden_channels: 30

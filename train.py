@@ -34,15 +34,15 @@ def train():
     split_config = SplitConfig(is_undirected=False,
                                edge_types=target_edge,
                                rev_edge_types=reverse_edge,
-                               num_val=.1,
+                               num_val=.5,
                                num_test=.00,
                                add_negative_train_samples=True,
                                disjoint_train_ratio=.2
                                )
 
-    train_cfg = TrainConfig(num_layers=3,
+    train_cfg = TrainConfig(num_layers=5,
                             num_neighbors=10,
-                            dropout=.1,
+                            dropout=.4,
                             learning_rate=params_show()['train']['learning_rate'],
                             batch_size=params_show()['train']['batch_size'],
                             epochs=20
@@ -92,6 +92,9 @@ def train():
     trainer.fit(model=model, datamodule=datamodule)
 
     score = checkpoint_callback.best_model_score
+    with open('best_checkpoint.txt', 'w') as f:
+        f.write(checkpoint_callback.filename)
+
     print(f'Best score was {score}')
     logger.log_metrics({f'best_{score}': score})
 

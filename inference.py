@@ -8,9 +8,9 @@ import polars as pl
 CONNECTION = sqlite3.connect(r'data/chinook.db')
 
 
-#@st.cache_resource
+# @st.cache_resource
 def load_model(data):
-    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=12-step=637.ckpt'
+    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=2-step=84.ckpt'
     checkpoint = torch.load(checkpoint_path)
 
     target_edge = ('playlists', 'hasTrack', 'tracks')
@@ -18,8 +18,8 @@ def load_model(data):
     gat_config = GATConfig(
         in_channels=(-1, -1),
         hidden_channels=params_show()['train']['hidden_channels'],
-        num_layers=3,
-        dropout=0.0,
+        num_layers=5,
+        dropout=0,
         norm='BatchNorm',
         add_self_loops=False,
         v2=True
@@ -74,7 +74,7 @@ def predict_songs(data, track_ids: list, top_k: int):
     return model(data).topk(top_k)
 
 
-#@st.cache_data
+# @st.cache_data
 def load_data():
     return torch.load(f'data/graph.bin')
 
@@ -101,14 +101,13 @@ def main():
         if start:
             st.session_state['preds'] = predict_songs(data=load_data(), track_ids=track_ids, top_k=10)
 
-
+    st.subheader('Selected Songs')
     st.write(selected_tracks)
     if st.session_state['preds']:
-        new_tracks = tracks.with_row_index(name='id').filter(pl.col('id').is_in(st.session_state['preds'].indices.tolist()))
+        new_tracks = tracks.with_row_index(name='id').filter(
+            pl.col('id').is_in(st.session_state['preds'].indices.tolist()))
+        st.subheader('Recommended Songs')
         st.write(new_tracks['FullName'].to_list())
-
-
-
 
 
 if __name__ == '__main__':
