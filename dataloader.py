@@ -46,7 +46,8 @@ def split(data: HeteroData,
           shuffle: bool,
           num_neighbors: list[int]):
 
-    splitter = RandomLinkSplit(**asdict(split_config))
+    splitter = RandomLinkSplit(add_negative_train_samples=False,
+                               **asdict(split_config))
 
     train_data, val_data, test_data = splitter(data)
 
@@ -54,7 +55,6 @@ def split(data: HeteroData,
         'batch_size': batch_size,
         'num_neighbors': num_neighbors,
         'negative_sampling': True
-
     }
 
     nontrain_loader_args = {
