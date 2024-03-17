@@ -10,7 +10,7 @@ CONNECTION = sqlite3.connect(r'data/chinook.db')
 
 # @st.cache_resource
 def load_model(data):
-    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=2-step=84.ckpt'
+    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=0-step=400.ckpt'
     checkpoint = torch.load(checkpoint_path)
 
     target_edge = ('playlists', 'hasTrack', 'tracks')
@@ -18,7 +18,7 @@ def load_model(data):
     gat_config = GATConfig(
         in_channels=(-1, -1),
         hidden_channels=params_show()['train']['hidden_channels'],
-        num_layers=5,
+        num_layers=6,
         dropout=0,
         norm='BatchNorm',
         add_self_loops=False,

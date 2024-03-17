@@ -34,14 +34,12 @@ def train():
     split_config = SplitConfig(is_undirected=False,
                                edge_types=target_edge,
                                rev_edge_types=reverse_edge,
-                               num_val=.5,
-                               num_test=.00,
-                               add_negative_train_samples=True,
-                               disjoint_train_ratio=.2
+                               num_val=.05,
+                               num_test=.00
                                )
 
-    train_cfg = TrainConfig(num_layers=5,
-                            num_neighbors=10,
+    train_cfg = TrainConfig(num_layers=6,
+                            num_neighbors=30,
                             dropout=.4,
                             learning_rate=params_show()['train']['learning_rate'],
                             batch_size=params_show()['train']['batch_size'],
@@ -76,7 +74,7 @@ def train():
     checkpoint_callback = ModelCheckpoint(monitor=score,
                                           mode='max',
                                           verbose=True,
-                                          save_top_k=1
+                                          #save_top_k=1
                                           )
 
     logger = DVCLiveLogger()
@@ -84,16 +82,16 @@ def train():
     trainer = pl.Trainer(deterministic=True,
                          max_epochs=train_cfg.epochs,
                          enable_progress_bar=True,
+                         val_check_interval=200,
                          accelerator='auto',
                          logger=logger,
                          callbacks=[checkpoint_callback],
+                         max_steps=5000
                          )
 
     trainer.fit(model=model, datamodule=datamodule)
 
     score = checkpoint_callback.best_model_score
-    with open('best_checkpoint.txt', 'w') as f:
-        f.write(checkpoint_callback.filename)
 
     print(f'Best score was {score}')
     logger.log_metrics({f'best_{score}': score})

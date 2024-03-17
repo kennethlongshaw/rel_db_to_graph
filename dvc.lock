@@ -51,6 +51,6 @@ stages:
     params:
       params.yaml:
         train:
-          batch_size: 64
-          learning_rate: 0.001
-          hidden_channels: 30
+          batch_size: 128
+          learning_rate: 0.005
+          hidden_channels: 20
