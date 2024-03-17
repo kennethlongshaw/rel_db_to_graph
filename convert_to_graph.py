@@ -157,6 +157,10 @@ def get_node_data(nodes):
     # Drop non-numeric data
     tables_dfs = {k: v.select(pl.col(pl.NUMERIC_DTYPES)) for k, v in tables_dfs.items()}
 
+
+    # FEATURE ENGINEERING
+    tables_dfs['genres'] = pl.concat([tables_dfs['genres'], tables_dfs['genres'].to_dummies('GenreId')], how='horizontal')
+
     return {'nodes': nodes, 'dfs': tables_dfs}
 
 

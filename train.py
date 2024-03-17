@@ -27,10 +27,10 @@ def train():
 
     train_cfg = TrainConfig(num_layers=6,
                             num_neighbors=10,
-                            dropout=.4,
+                            dropout=.2,
                             learning_rate=params_show()['train']['learning_rate'],
                             batch_size=params_show()['train']['batch_size'],
-                            epochs=20
+                            epochs=50
                             )
 
     gat_config = GATConfig(
@@ -61,7 +61,7 @@ def train():
     checkpoint_callback = ModelCheckpoint(monitor=score,
                                           mode='max',
                                           verbose=True,
-                                          #save_top_k=1
+                                          save_top_k=1
                                           )
 
     logger = DVCLiveLogger()

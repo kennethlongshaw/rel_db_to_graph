@@ -122,7 +122,8 @@ class LinkPredModel(pl.LightningModule):
                  value=loss,
                  batch_size=batch_size,
                  on_step=True,
-                 prog_bar=True
+                 prog_bar=True,
+                 on_epoch=True
                  )
 
         if step_name == 'val':
