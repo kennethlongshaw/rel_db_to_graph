@@ -26,7 +26,7 @@ def train():
                                )
 
     train_cfg = TrainConfig(num_layers=6,
-                            num_neighbors=30,
+                            num_neighbors=10,
                             dropout=.4,
                             learning_rate=params_show()['train']['learning_rate'],
                             batch_size=params_show()['train']['batch_size'],
