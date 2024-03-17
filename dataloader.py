@@ -24,7 +24,7 @@ def split(data: HeteroData,
     train_loader_args = {
         'batch_size': batch_size,
         'num_neighbors': num_neighbors,
-        'negative_sampling': 'binary'
+        'neg_sampling': 'binary'
     }
 
     nontrain_loader_args = {
