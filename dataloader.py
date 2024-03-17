@@ -30,25 +30,22 @@ def split(data: HeteroData,
     nontrain_loader_args = {
         'batch_size': batch_size,
         'num_neighbors': [-1] * len(num_neighbors),
-        'negative_sampling': 'binary'
+        'neg_sampling': 'binary'
     }
 
     train_loader = LinkNeighborLoader(train_data,
                                       edge_label_index=(target_edge, train_data[target_edge].edge_label_index),
-                                      edge_label=train_data[target_edge].edge_label,
                                       shuffle=shuffle,
                                       **train_loader_args
                                       )
 
     val_loader = LinkNeighborLoader(val_data,
                                     edge_label_index=(target_edge, val_data[target_edge].edge_label_index),
-                                    edge_label=val_data[target_edge].edge_label,
                                     **nontrain_loader_args
                                     )
 
     test_loader = LinkNeighborLoader(test_data,
                                      edge_label_index=(target_edge, test_data[target_edge].edge_label_index),
-                                     edge_label=test_data[target_edge].edge_label,
                                      **nontrain_loader_args
                                      )
 
