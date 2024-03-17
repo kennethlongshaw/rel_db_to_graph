@@ -146,12 +146,12 @@ def get_node_data(nodes):
     # Get foreign keys for removal
     foreign_keys = pl.concat([pl.read_database(f"PRAGMA foreign_key_list({t})", CONNECTION)
                              .select(source_table=pl.lit(t),
-                                     foriegn_id=pl.col('from'),
+                                     foreign_id=pl.col('from'),
                                      )
 
                               for t in nodes['table']])
 
-    tables_dfs = {t: df.drop(foreign_keys.filter(pl.col('source_table') == t)['foriegn_id'].to_list()) for t, df in
+    tables_dfs = {t: df.drop(foreign_keys.filter(pl.col('source_table') == t)['foreign_id'].to_list()) for t, df in
                   tables_dfs.items()}
 
     # Drop non-numeric data

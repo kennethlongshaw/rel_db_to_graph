@@ -25,6 +25,9 @@ stages:
   train:
     cmd: python train.py
     deps:
+    - train.py
+    - setup.py
+    - dataloader.py
     - data\graph.bin
     params:
     - train

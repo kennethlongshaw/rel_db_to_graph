@@ -5,21 +5,7 @@ from model import LinkPredModel, GATConfig, TrainConfig
 from pytorch_lightning.callbacks import ModelCheckpoint
 from dvclive.lightning import DVCLiveLogger
 from dvc.api import params_show
-import numpy as np
-import random
-
-
-def setup():
-    # seed things for reproducibility
-    seed_value = 42
-    torch.manual_seed(seed_value)
-    torch.cuda.manual_seed(seed_value)
-    torch.cuda.manual_seed_all(seed_value)  # if you are using multi-GPU.
-    np.random.seed(seed_value)  # if NumPy is used
-    random.seed(seed_value)  # if Python's `random` is used
-    pl.seed_everything(seed=seed_value, workers=True)
-    torch.backends.cuda.matmul.allow_tf32 = True  # allow tf32 on matmul
-    torch.backends.cudnn.allow_tf32 = True  # allow tf32 on cudnn
+from setup import setup
 
 
 def train():

@@ -1,11 +1,9 @@
 import pytorch_lightning as pl
 from pytorch_lightning.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
-from torch_geometric.data.lightning import LightningLinkData
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.loader import LinkNeighborLoader
 from torch_geometric.transforms import RandomLinkSplit
 from config_maker import create_config_from_class
-from pytorch_lightning import LightningDataModule
 from dataclasses import asdict
 
 SplitConfig = create_config_from_class(RandomLinkSplit)
@@ -24,18 +22,19 @@ def split(data: HeteroData,
     train_loader_args = {
         'batch_size': batch_size,
         'num_neighbors': num_neighbors,
-        'neg_sampling': 'binary'
+        'neg_sampling': 'binary',
+        'shuffle': shuffle
     }
 
     nontrain_loader_args = {
         'batch_size': batch_size,
         'num_neighbors': [-1] * len(num_neighbors),
-        'neg_sampling': 'binary'
+        'neg_sampling': 'binary',
+        'shuffle': False
     }
 
     train_loader = LinkNeighborLoader(train_data,
                                       edge_label_index=(target_edge, train_data[target_edge].edge_label_index),
-                                      shuffle=shuffle,
                                       **train_loader_args
                                       )
 
@@ -60,8 +59,6 @@ def split(data: HeteroData,
 
 
 class HeteroGraphLinkDataModule(pl.LightningDataModule):
-    """Own implementation of LightningLinkData for fallback"""
-
     def __init__(self,
                  data: HeteroData,
                  batch_size: int,
