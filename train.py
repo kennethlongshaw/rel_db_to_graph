@@ -83,11 +83,9 @@ def train():
     trainer = pl.Trainer(deterministic=True,
                          max_epochs=train_cfg.epochs,
                          enable_progress_bar=True,
-                         val_check_interval=200,
                          accelerator='auto',
                          logger=logger,
                          callbacks=[checkpoint_callback],
-                         max_steps=5000
                          )
 
     trainer.fit(model=model, datamodule=datamodule)
