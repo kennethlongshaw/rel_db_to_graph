@@ -35,7 +35,8 @@ def train():
                                edge_types=target_edge,
                                rev_edge_types=reverse_edge,
                                num_val=.05,
-                               num_test=.00
+                               num_test=.00,
+                               add_negative_train_samples=False
                                )
 
     train_cfg = TrainConfig(num_layers=6,
