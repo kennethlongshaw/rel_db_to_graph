@@ -1,4 +1,19 @@
 train:
-  batch_size: 2024
-  learning_rate: .005
-  hidden_channels: 20
+  target_edge:
+    - playlists
+    - hasTrack
+    - tracks
+
+  num_val: .05
+  num_test: .00
+
+  num_layers: 6
+  num_neighbors: .4
+
+
+  batch_size: 8715
+  learning_rate: .0001
+  hidden_channels: 50
+  dropout: .3
+  epochs: 50
+  norm: BatchNorm

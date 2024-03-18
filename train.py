@@ -10,35 +10,38 @@ from setup import setup
 
 def train():
     setup()
+
+    params = params_show()['train']
+
     data = torch.load(f'data/graph.bin')
-    target_edge = ('playlists', 'hasTrack', 'tracks')
+    target_edge = params['target_edge']
 
     reverse_edge = (target_edge[2], 'REVERSE_' + target_edge[1], target_edge[0])
     if reverse_edge not in data.metadata()[1]:
         reverse_edge = None
 
     split_config = SplitConfig(is_undirected=False,
-                               edge_types=target_edge,
+                               edge_types=params['target_edge'],
                                rev_edge_types=reverse_edge,
-                               num_val=.05,
-                               num_test=.00,
+                               num_val=params['num_val'],
+                               num_test=params['num_test'],
                                add_negative_train_samples=False
                                )
 
-    train_cfg = TrainConfig(num_layers=6,
-                            num_neighbors=10,
-                            dropout=.2,
-                            learning_rate=params_show()['train']['learning_rate'],
-                            batch_size=params_show()['train']['batch_size'],
-                            epochs=50
+    train_cfg = TrainConfig(num_layers=params['num_layers'],
+                            num_neighbors=params['num_neighbors'],
+                            dropout=params['dropout'],
+                            learning_rate=params['learning_rate'],
+                            batch_size=params['batch_size'],
+                            epochs=params['epochs']
                             )
 
     gat_config = GATConfig(
         in_channels=(-1, -1),
-        hidden_channels=params_show()['train']['hidden_channels'],
+        hidden_channels=params['hidden_channels'],
         num_layers=train_cfg.num_layers,
-        dropout=.1,
-        norm='BatchNorm',
+        dropout=params['dropout'],
+        norm=params['norm'],
         add_self_loops=False,
         v2=True
     )
