@@ -33,7 +33,7 @@ def train():
                             dropout=params['dropout'],
                             learning_rate=params['learning_rate'],
                             batch_size=params['batch_size'],
-                            steps=params['steps']
+                            epochs=params['epochs']
                             )
 
     gat_config = GATConfig(
@@ -70,8 +70,7 @@ def train():
     logger = DVCLiveLogger()
 
     trainer = pl.Trainer(deterministic=True,
-                         max_steps=train_cfg.steps,
-                         val_check_interval=8,
+                         max_epochs=train_cfg.epochs,
                          enable_progress_bar=True,
                          accelerator='auto',
                          logger=logger,

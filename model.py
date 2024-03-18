@@ -30,7 +30,7 @@ class TrainConfig:
     num_layers: int
     num_neighbors: int
     learning_rate: float
-    steps: int
+    epochs: int
     dropout: Optional[float] = None
     betas: Optional[tuple[float, float]] = None
     decay_lr: Optional[bool] = None
@@ -120,7 +120,6 @@ class LinkPredModel(pl.LightningModule):
         self.log(name=f'{step_name}_loss',
                  value=loss,
                  batch_size=batch_size,
-                 on_step=True,
                  prog_bar=True,
                  )
 
@@ -130,20 +129,15 @@ class LinkPredModel(pl.LightningModule):
             self.precision(pred, target)
             self.recall(pred, target)
 
-
-            log_args = {'batch_size': batch_size,
-                        'prog_bar': True
-                        }
-
-            acc = self.accuracy.compute()
-            self.best_acc = max(acc, self.best_acc)
-            self.log(name=f'{step_name}_best_accuracy', value=self.best_acc, **log_args)
-            self.log(name=f'{step_name}_accuracy', value=acc, **log_args)
-            self.log(name=f'{step_name}_precision', value=self.precision.compute(), **log_args)
-            self.log(name=f'{step_name}_recall', value=self.recall.compute(), **log_args)
-
         return loss
 
+    def on_validation_epoch_end(self):
+        acc = self.accuracy.compute()
+        self.best_acc = max(acc, self.best_acc)
+        self.log(name='val_accuracy', value=acc)
+        self.log(name='val_best_accuracy', value=self.best_acc)
+        self.log(name='val_precision', value=self.precision.compute())
+        self.log(name='val_recall', value=self.recall.compute())
 
     def training_step(self, batch):
         return self.model_step(batch, 'train')
@@ -156,27 +150,3 @@ class LinkPredModel(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
-
-    def explain(self, batch):
-        """
-        Generates explanations for the given batch.
-
-        Args:
-            batch: The batch of data for which to generate explanations.
-
-        Returns:
-            Explanations for the model's predictions on the given batch.
-        """
-
-        # Encode the graph data to get node embeddings
-        z_dict = self.encoder(batch.x_dict, batch.edge_index_dict)
-
-        # Assume batch contains the necessary edge_label_index for the target edge
-        edge_label_index = batch[self.target_edge].edge_label_index
-
-        # Generate explanations
-        explanations = self.explainer(z_dict=z_dict,
-                                      edge_index_dict=batch.edge_index_dict,
-                                      edge_label_index=edge_label_index)
-
-        return explanations
