@@ -14,14 +14,14 @@ def train():
     params = params_show()['train']
 
     data = torch.load(f'data/graph.bin')
-    target_edge = params['target_edge']
+    target_edge = tuple(params['target_edge'])
 
     reverse_edge = (target_edge[2], 'REVERSE_' + target_edge[1], target_edge[0])
     if reverse_edge not in data.metadata()[1]:
         reverse_edge = None
 
     split_config = SplitConfig(is_undirected=False,
-                               edge_types=params['target_edge'],
+                               edge_types=target_edge,
                                rev_edge_types=reverse_edge,
                                num_val=params['num_val'],
                                num_test=params['num_test'],
