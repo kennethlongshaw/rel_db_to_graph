@@ -6,15 +6,6 @@ from dvc import api
 
 
 def objective(trial: optuna.Trial):
-    # params = {
-    # # Define the hyperparameters to tune
-    # 'training.learning_rate' : trial.suggest_float("learning_rate", low=1e-5, high=1e-1, log=True),
-    # 'training.num_neighbors' : trial.suggest_categorical('num_neighbors', range(10, 60, 10)),
-    # 'training.num_layers' : trial.suggest_categorical('num_layers', range(2, 5)),
-    # 'model.hidden_channels' : trial.suggest_categorical('hidden_channels', range(5, 165, 20)),
-    # 'training.dropout' : trial.suggest_categorical('dropout', [i/100 for i in range(5, 55, 5)]),
-    # }
-
     params = {
         # Define the hyperparameters to tune
         'train.learning_rate': trial.suggest_float("learning_rate", high=0.01, low=0.000001, log=True),
@@ -48,7 +39,7 @@ def objective(trial: optuna.Trial):
 
 def main():
     storage = 'sqlite:///gnn_studies.db'
-    study_name = 'music_gnn_v1'
+    study_name = 'music_gnn_v2'
 
     # Create an Optuna study
     study = optuna.create_study(storage=storage,
@@ -57,7 +48,7 @@ def main():
                                 direction="maximize")
 
     # Optimize the objective function
-    study.optimize(objective, n_trials=100)
+    study.optimize(objective, n_trials=1)
 
     # Print the best hyperparameters and score
     print("Best hyperparameters:", study.best_params)
