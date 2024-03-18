@@ -131,25 +131,26 @@ class LinkPredModel(pl.LightningModule):
             self.accuracy(pred, target)
             self.precision(pred, target)
             self.recall(pred, target)
-            #self.f1_score(pred, target)
+            # self.f1_score(pred, target)
 
             log_args = {'batch_size': batch_size,
-                        'on_epoch': True,
                         'prog_bar': True
                         }
 
             self.log(name=f'{step_name}_accuracy', value=self.accuracy, **log_args)
             self.log(name=f'{step_name}_precision', value=self.precision, **log_args)
             self.log(name=f'{step_name}_recall', value=self.recall, **log_args)
-            # self.log(name=f'{step_name}_f1_score', value=self.f1_score, **log_args)
 
         return loss
 
     def on_validation_epoch_end(self):
-        self.log(name='val_accuracy_epoch', value=self.accuracy.compute())
+        acc = self.accuracy.compute()
+        self.best_acc = max(acc, self.best_acc)
+
+        self.log(name='val_accuracy_epoch', value=acc)
+        self.log(name='val_best_accuracy', value=self.best_acc)
         self.log(name='val_precision_epoch', value=self.precision.compute())
         self.log(name='val_recall_epoch', value=self.recall.compute())
-        # self.log(name='val_f1_score_epoch', value=self.f1_score.compute())
 
     def training_step(self, batch):
         return self.model_step(batch, 'train')
@@ -173,7 +174,6 @@ class LinkPredModel(pl.LightningModule):
         Returns:
             Explanations for the model's predictions on the given batch.
         """
-
 
         # Encode the graph data to get node embeddings
         z_dict = self.encoder(batch.x_dict, batch.edge_index_dict)

@@ -10,7 +10,7 @@ CONNECTION = sqlite3.connect(r'data/chinook.db')
 
 # @st.cache_resource
 def load_model(data):
-    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=14-step=975.ckpt'
+    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=53-step=54.ckpt'
     checkpoint = torch.load(checkpoint_path)
 
     target_edge = ('playlists', 'hasTrack', 'tracks')
