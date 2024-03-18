@@ -30,8 +30,8 @@ stages:
     deps:
     - path: convert_to_graph.py
       hash: md5
-      md5: b67d4ff35351a5013621a84233c6602d
-      size: 10997
+      md5: a87b8b2b190824fe97b4424c54063395
+      size: 11152
     - path: data\chinook.db
       hash: md5
       md5: f2dd976ac500525eb862a008ba21609c
@@ -39,18 +39,41 @@ stages:
     outs:
     - path: data\graph.bin
       hash: md5
-      md5: 88b813b3a7be9cbf0c0c2b1829969d50
-      size: 996299
+      md5: 28a72da2346eadcd91e904ea3c3a0cfd
+      size: 998795
   train:
     cmd: python train.py
     deps:
     - path: data\graph.bin
       hash: md5
-      md5: 88b813b3a7be9cbf0c0c2b1829969d50
-      size: 996299
+      md5: 28a72da2346eadcd91e904ea3c3a0cfd
+      size: 998795
+    - path: dataloader.py
+      hash: md5
+      md5: c8661ce66b96949131ca70710fc05699
+      size: 3560
+    - path: setup.py
+      hash: md5
+      md5: 85bce468b57566b5a60ed12f8dbaf631
+      size: 782
+    - path: train.py
+      hash: md5
+      md5: 5f436c5c27c47e41e49a747341d90a00
+      size: 3376
     params:
       params.yaml:
         train:
-          batch_size: 128
-          learning_rate: 0.005
-          hidden_channels: 20
+          target_edge:
+          - playlists
+          - hasTrack
+          - tracks
+          num_val: 0.15
+          num_test: 0.0
+          num_layers: 5
+          num_neighbors: 30
+          batch_size: 512
+          learning_rate: 1.376857957942358e-06
+          hidden_channels: 30
+          dropout: 0.2
+          steps: 500
+          norm: BatchNorm
