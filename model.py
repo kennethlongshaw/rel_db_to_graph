@@ -30,7 +30,7 @@ class TrainConfig:
     num_layers: int
     num_neighbors: int
     learning_rate: float
-    epochs: int
+    steps: int
     dropout: Optional[float] = None
     betas: Optional[tuple[float, float]] = None
     decay_lr: Optional[bool] = None
@@ -122,34 +122,26 @@ class LinkPredModel(pl.LightningModule):
                  batch_size=batch_size,
                  on_step=True,
                  prog_bar=True,
-                 on_epoch=True
                  )
 
         if step_name == 'val':
             # Calculate metrics only for the validation step
-            self.accuracy(pred, target)
+            acc = self.accuracy(pred, target)
             self.precision(pred, target)
             self.recall(pred, target)
-            # self.f1_score(pred, target)
 
             log_args = {'batch_size': batch_size,
                         'prog_bar': True
                         }
 
+            self.best_acc = max(acc, self.best_acc)
+            self.log(name=f'{step_name}_best_accuracy', value=self.best_acc, **log_args)
             self.log(name=f'{step_name}_accuracy', value=self.accuracy, **log_args)
             self.log(name=f'{step_name}_precision', value=self.precision, **log_args)
             self.log(name=f'{step_name}_recall', value=self.recall, **log_args)
 
         return loss
 
-    def on_validation_epoch_end(self):
-        acc = self.accuracy.compute()
-        self.best_acc = max(acc, self.best_acc)
-
-        self.log(name='val_accuracy_epoch', value=acc)
-        self.log(name='val_best_accuracy', value=self.best_acc)
-        self.log(name='val_precision_epoch', value=self.precision.compute())
-        self.log(name='val_recall_epoch', value=self.recall.compute())
 
     def training_step(self, batch):
         return self.model_step(batch, 'train')

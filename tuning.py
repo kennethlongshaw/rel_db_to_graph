@@ -17,12 +17,11 @@ def objective(trial: optuna.Trial):
 
     params = {
         # Define the hyperparameters to tune
-        'training.learning_rate': trial.suggest_float("learning_rate", high=0.01, low=0.000001, log=True),
-        'training.num_neighbors': trial.suggest_categorical('num_neighbors', range(5, 55, 5)),
-        'training.num_layers': trial.suggest_categorical('num_layers', [2, 3, 4, 5, 6]),
-        'model.hidden_channels': trial.suggest_categorical('num_neighbors', range(10, 110, 10)),
-        'training.dropout': trial.suggest_categorical('dropout', [d/100 for d in range(5, 55, 5)]),
-        'training.epochs': 50
+        'train.learning_rate': trial.suggest_float("learning_rate", high=0.01, low=0.000001, log=True),
+        'train.num_neighbors': trial.suggest_categorical('num_neighbors', list(range(5, 55, 5))),
+        'train.num_layers': trial.suggest_categorical('num_layers', [2, 3, 4, 5, 6]),
+        'train.hidden_channels': trial.suggest_categorical('hidden_channels', list(range(10, 110, 10))),
+        'train.dropout': trial.suggest_categorical('dropout', list([d/100 for d in range(5, 55, 5)]))
     }
 
     param_str = " ".join([f'-S "{param_key}={param_value}"' for param_key, param_value in params.items()])
