@@ -126,19 +126,21 @@ class LinkPredModel(pl.LightningModule):
 
         if step_name == 'val':
             # Calculate metrics only for the validation step
-            acc = self.accuracy(pred, target)
+            self.accuracy(pred, target)
             self.precision(pred, target)
             self.recall(pred, target)
+
 
             log_args = {'batch_size': batch_size,
                         'prog_bar': True
                         }
 
+            acc = self.accuracy.compute()
             self.best_acc = max(acc, self.best_acc)
             self.log(name=f'{step_name}_best_accuracy', value=self.best_acc, **log_args)
-            self.log(name=f'{step_name}_accuracy', value=self.accuracy, **log_args)
-            self.log(name=f'{step_name}_precision', value=self.precision, **log_args)
-            self.log(name=f'{step_name}_recall', value=self.recall, **log_args)
+            self.log(name=f'{step_name}_accuracy', value=acc, **log_args)
+            self.log(name=f'{step_name}_precision', value=self.precision.compute(), **log_args)
+            self.log(name=f'{step_name}_recall', value=self.recall.compute(), **log_args)
 
         return loss
 
