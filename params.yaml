@@ -4,16 +4,16 @@ train:
     - hasTrack
     - tracks
 
-  num_val: .05
+  num_val: .15
   num_test: .00
 
   num_layers: 6
-  num_neighbors: .4
+  num_neighbors: 20
 
 
-  batch_size: 8715
-  learning_rate: .0001
-  hidden_channels: 50
-  dropout: .3
-  epochs: 50
+  batch_size: 512
+  learning_rate: .001
+  hidden_channels: 30
+  dropout: .5
+  epochs: 100
   norm: BatchNorm

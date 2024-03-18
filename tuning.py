@@ -1,10 +1,8 @@
 import time
-
 import optuna
 import subprocess
 import polars as pl
 from dvc import api
-from time import sleep
 
 
 def objective(trial: optuna.Trial):
@@ -19,12 +17,11 @@ def objective(trial: optuna.Trial):
 
     params = {
         # Define the hyperparameters to tune
-        'training.learning_rate': trial.suggest_float("learning_rate", high=0.01, low=0.0001, log=True),
-        # low=1e-5, high=1e-1, log=True),
-        'training.num_neighbors': 10,
-        'training.num_layers': 4,
-        'model.hidden_channels': 145,
-        'training.dropout': .45,
+        'training.learning_rate': trial.suggest_float("learning_rate", high=0.01, low=0.000001, log=True),
+        'training.num_neighbors': trial.suggest_categorical('num_neighbors', range(5, 55, 5)),
+        'training.num_layers': trial.suggest_categorical('num_layers', [2, 3, 4, 5, 6]),
+        'model.hidden_channels': trial.suggest_categorical('num_neighbors', range(10, 110, 10)),
+        'training.dropout': trial.suggest_categorical('dropout', [d/100 for d in range(5, 55, 5)]),
         'training.epochs': 50
     }
 

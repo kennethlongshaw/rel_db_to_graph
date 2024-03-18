@@ -1,5 +1,4 @@
 from torch_geometric.nn import GAT, to_hetero
-from torch_geometric.explain import Explainer, ExplainerConfig, AttentionExplainer
 import pytorch_lightning as pl
 from torch.nn.functional import binary_cross_entropy
 import torch
@@ -101,7 +100,7 @@ class LinkPredModel(pl.LightningModule):
         self.accuracy = Accuracy(task="binary")
         self.precision = Precision(task="binary")
         self.recall = Recall(task="binary")
-        # self.f1_score = F1Score(task="binary")
+        self.best_acc = 0
 
     def forward(self, batch):
         # Encode the graph data to get node embeddings
