@@ -4,9 +4,8 @@ import torch
 import pytorch_lightning as pl
 
 
-def setup():
-    # seed things for reproducibility
-    seed_value = 42
+def setup(seed_value):
+
     torch.manual_seed(seed_value)
 
     if torch.cuda.is_available():

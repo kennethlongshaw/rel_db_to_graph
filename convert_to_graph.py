@@ -240,14 +240,6 @@ def add_degree(hgraph: HeteroData):
 
     return hgraph
 
-
-def convert_to_undirected(hgraph: HeteroData):
-    for edge in hgraph.metadata()[1]:
-        hgraph[edge].edge_index = to_undirected(hgraph[edge].edge_index)
-
-    return hgraph
-
-
 def reverse(hgraph: HeteroData):
     for edge in hgraph.metadata()[1]:
         if edge[0] != edge[2]:

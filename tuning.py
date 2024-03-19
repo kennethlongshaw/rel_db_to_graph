@@ -48,7 +48,7 @@ def main():
                                 direction="maximize")
 
     # Optimize the objective function
-    study.optimize(objective, n_trials=1)
+    study.optimize(objective, n_trials=100)
 
     # Print the best hyperparameters and score
     print("Best hyperparameters:", study.best_params)

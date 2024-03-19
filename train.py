@@ -9,9 +9,9 @@ from setup import setup
 
 
 def train():
-    setup()
-
     params = params_show()['train']
+
+    setup(params['seed'])
 
     data = torch.load(f'data/graph.bin')
     target_edge = tuple(params['target_edge'])

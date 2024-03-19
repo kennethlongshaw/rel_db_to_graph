@@ -6,6 +6,7 @@ from torch_geometric.transforms import RandomLinkSplit
 from config_maker import create_config_from_class
 from dataclasses import asdict
 
+
 SplitConfig = create_config_from_class(RandomLinkSplit)
 
 
@@ -24,8 +25,6 @@ def split(data: HeteroData,
         'num_neighbors': num_neighbors,
         'neg_sampling': 'binary',
         'shuffle': shuffle,
-        #'num_workers': 2,
-        #'persistent_workers': True
     }
 
     nontrain_loader_args = {
@@ -33,8 +32,6 @@ def split(data: HeteroData,
         'num_neighbors': [-1] * len(num_neighbors),
         'neg_sampling': 'binary',
         'shuffle': False,
-        #'num_workers': 2,
-        #'persistent_workers': True
     }
 
     train_loader = LinkNeighborLoader(train_data,

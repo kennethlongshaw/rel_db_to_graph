@@ -4,6 +4,7 @@ pandas
 polars
 pyarrow
 torch_geometric
+scitkit-learn
 optuna
 streamlit
 --find-links https://download.pytorch.org/whl/cu121
