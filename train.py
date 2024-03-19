@@ -11,7 +11,7 @@ from setup import setup
 def train():
     params = params_show()['train']
 
-    setup(params['seed'])
+    setup(params['random_seed'])
 
     data = torch.load(f'data/graph.bin')
     target_edge = tuple(params['target_edge'])
