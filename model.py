@@ -1,5 +1,4 @@
 from torch_geometric.nn import GAT, to_hetero
-from torch_geometric.explain import Explainer, ExplainerConfig, AttentionExplainer
 import pytorch_lightning as pl
 from torch.nn.functional import binary_cross_entropy
 import torch
@@ -101,7 +100,7 @@ class LinkPredModel(pl.LightningModule):
         self.accuracy = Accuracy(task="binary")
         self.precision = Precision(task="binary")
         self.recall = Recall(task="binary")
-        # self.f1_score = F1Score(task="binary")
+        self.best_acc = 0
 
     def forward(self, batch):
         # Encode the graph data to get node embeddings
@@ -121,9 +120,7 @@ class LinkPredModel(pl.LightningModule):
         self.log(name=f'{step_name}_loss',
                  value=loss,
                  batch_size=batch_size,
-                 on_step=True,
                  prog_bar=True,
-                 on_epoch=True
                  )
 
         if step_name == 'val':
@@ -131,25 +128,16 @@ class LinkPredModel(pl.LightningModule):
             self.accuracy(pred, target)
             self.precision(pred, target)
             self.recall(pred, target)
-            #self.f1_score(pred, target)
-
-            log_args = {'batch_size': batch_size,
-                        'on_epoch': True,
-                        'prog_bar': True
-                        }
-
-            self.log(name=f'{step_name}_accuracy', value=self.accuracy, **log_args)
-            self.log(name=f'{step_name}_precision', value=self.precision, **log_args)
-            self.log(name=f'{step_name}_recall', value=self.recall, **log_args)
-            # self.log(name=f'{step_name}_f1_score', value=self.f1_score, **log_args)
 
         return loss
 
     def on_validation_epoch_end(self):
-        self.log(name='val_accuracy_epoch', value=self.accuracy.compute())
-        self.log(name='val_precision_epoch', value=self.precision.compute())
-        self.log(name='val_recall_epoch', value=self.recall.compute())
-        # self.log(name='val_f1_score_epoch', value=self.f1_score.compute())
+        acc = self.accuracy.compute()
+        self.best_acc = max(acc, self.best_acc)
+        self.log(name='val_accuracy', value=acc)
+        self.log(name='val_best_accuracy', value=self.best_acc)
+        self.log(name='val_precision', value=self.precision.compute())
+        self.log(name='val_recall', value=self.recall.compute())
 
     def training_step(self, batch):
         return self.model_step(batch, 'train')
@@ -162,28 +150,3 @@ class LinkPredModel(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
-
-    def explain(self, batch):
-        """
-        Generates explanations for the given batch.
-
-        Args:
-            batch: The batch of data for which to generate explanations.
-
-        Returns:
-            Explanations for the model's predictions on the given batch.
-        """
-
-
-        # Encode the graph data to get node embeddings
-        z_dict = self.encoder(batch.x_dict, batch.edge_index_dict)
-
-        # Assume batch contains the necessary edge_label_index for the target edge
-        edge_label_index = batch[self.target_edge].edge_label_index
-
-        # Generate explanations
-        explanations = self.explainer(z_dict=z_dict,
-                                      edge_index_dict=batch.edge_index_dict,
-                                      edge_label_index=edge_label_index)
-
-        return explanations

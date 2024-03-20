@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+import torch
 from pytorch_lightning.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.loader import LinkNeighborLoader
@@ -6,15 +7,16 @@ from torch_geometric.transforms import RandomLinkSplit
 from config_maker import create_config_from_class
 from dataclasses import asdict
 
+
 SplitConfig = create_config_from_class(RandomLinkSplit)
 
+
 def split(data: HeteroData,
-          target_edge: tuple[str, str, str],
+          target_edge: tuple,
           split_config: SplitConfig,
           batch_size: int,
           shuffle: bool,
           num_neighbors: list[int]):
-
     splitter = RandomLinkSplit(**asdict(split_config))
 
     train_data, val_data, test_data = splitter(data)
@@ -23,28 +25,28 @@ def split(data: HeteroData,
         'batch_size': batch_size,
         'num_neighbors': num_neighbors,
         'neg_sampling': 'binary',
-        'shuffle': shuffle
+        'shuffle': shuffle,
     }
 
     nontrain_loader_args = {
         'batch_size': batch_size,
         'num_neighbors': [-1] * len(num_neighbors),
         'neg_sampling': 'binary',
-        'shuffle': False
+        'shuffle': False,
     }
 
     train_loader = LinkNeighborLoader(train_data,
-                                      edge_label_index=(target_edge, train_data[target_edge].edge_label_index),
+                                      edge_label_index=(target_edge, train_data[target_edge].edge_index),
                                       **train_loader_args
                                       )
 
     val_loader = LinkNeighborLoader(val_data,
-                                    edge_label_index=(target_edge, val_data[target_edge].edge_label_index),
+                                    edge_label_index=(target_edge, val_data[target_edge].edge_index),
                                     **nontrain_loader_args
                                     )
 
     test_loader = LinkNeighborLoader(test_data,
-                                     edge_label_index=(target_edge, test_data[target_edge].edge_label_index),
+                                     edge_label_index=(target_edge, test_data[target_edge].edge_index),
                                      **nontrain_loader_args
                                      )
 

@@ -1,0 +1,15 @@
+dvc
+dvclive
+pandas
+polars
+pyarrow
+torch_geometric
+optuna
+streamlit
+--find-links https://download.pytorch.org/whl/cpu
+torch
+--find-links https://data.pyg.org/whl/torch-2.2.0+cu121.html
+torch_scatter
+torch_sparse
+torch_cluster
+torch_spline_conv
