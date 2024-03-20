@@ -10,7 +10,7 @@ CONNECTION = sqlite3.connect(r'data/chinook.db')
 
 # @st.cache_resource
 def load_model(data):
-    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=99-step=1500.ckpt'
+    checkpoint_path = r'DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=3-step=60-v2.ckpt'
     checkpoint = torch.load(checkpoint_path)
 
     params = params_show()['train']
@@ -106,7 +106,6 @@ def main():
     st.subheader('Selected Songs')
     st.write(selected_tracks)
     if st.session_state['preds']:
-        st.write(st.session_state['preds'].values)
         new_tracks = tracks.with_row_index(name='id').filter(
             pl.col('id').is_in(st.session_state['preds'].indices.tolist()))
         st.subheader('Recommended Songs')

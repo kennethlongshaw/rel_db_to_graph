@@ -15,5 +15,5 @@ train:
   learning_rate: 0.00944217210243299
   hidden_channels: 10
   dropout: 0.15
-  epochs: 50
+  epochs: 3
   norm: BatchNorm
