@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+import torch
 from pytorch_lightning.utilities.types import TRAIN_DATALOADERS, EVAL_DATALOADERS
 from torch_geometric.data import Data, HeteroData
 from torch_geometric.loader import LinkNeighborLoader
