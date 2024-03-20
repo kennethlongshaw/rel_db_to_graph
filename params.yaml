@@ -1,4 +1,6 @@
 train:
+  random_seed: 10
+
   target_edge:
   - playlists
   - hasTrack
@@ -6,13 +8,12 @@ train:
   num_val: .15
   num_test: .00
 
-  num_layers: 5
+  num_layers: 6
   num_neighbors: 15
 
-
   batch_size: 512
-  learning_rate: 0.008054697191945225
+  learning_rate: 0.00944217210243299
   hidden_channels: 10
-  dropout: 0.2
-  steps: 500
+  dropout: 0.15
+  epochs: 50
   norm: BatchNorm

@@ -31,7 +31,11 @@ stages:
     - data\graph.bin
     params:
     - train
-
+    metrics:
+    - dvclive/metrics.json
+    plots:
+    - dvclive/plots/metrics:
+        x: step
 metrics:
 - dvclive/metrics.json
 plots:
