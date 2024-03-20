@@ -13,19 +13,6 @@ train.py: Trains a Graph Neural Network using link prediction to forecast playli
 ## Database Model
 The Chinook database comprises 11 tables including artists, albums, tracks, playlists, customers, invoices, and more. It models the intricacies of a digital media store, making it an ideal candidate for graph-based analysis.
 
-## Installation
-Clone the repository:
-
-`git clone <repository-url>`
-
-Set up a virtual environment (Optional but recommended):
-`python -m venv venv`
-`source venv/bin/activate`
-
-On Windows use `venv\Scripts\activate`
-
-## Install dependencies:
-
 CPU
 `pip install -r requirements_gpu.txt`
 
@@ -34,12 +21,8 @@ GPU
 
 ## Usage
 To run the project pipeline:
-
-## Initialize DVC:
-
-`dvc init`
-Pull the data and run the pipeline:
-
-`dvc repro`
-This command downloads the Chinook database, converts it to a graph format, and trains the GNN model.
+1. Initialize DVC with `dvc init`
+2. Pull the data and run the pipeline with `dvc repro`. This command downloads the Chinook database, converts it to a graph format, and trains the GNN model.
+3. The training will produce a checkpoint model like `DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=3-step=60-v2.ckpt` To run inference on the model, update `inference.py` with the checkpoint path.
+4. Run inference: `streamlit run inference.py`
 
