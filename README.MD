@@ -17,22 +17,19 @@ Leveraging DVC pipelines, our workflow transitions from downloading the Chinook 
 
 With 11 intricately related tables, the Chinook database serves as an ideal candidate to illustrate how graph-based analysis can unravel the complex interconnections within a digital media store's dataset, offering new perspectives and insights that conventional analysis might overlook.
 
-### Installation Instructions
-
-Ensure your environment is prepared to harness the power of GNNs:
-
+### Requirements
 **For CPU:**
 `pip install -r requirements_cpu.txt`
 
 **For GPU:**
 `pip install -r requirements_gpu.txt`
 
-## Quickstart Guide
-
-1. **Initialize Your Project**: Set the stage with `dvc init`.
-2. **Activate the Pipeline**: Employ `dvc repro` to navigate from data acquisition to GNN training effortlessly.
-3. **Locate Your Model**: Training finalizes with a model checkpoint, e.g., `DvcLiveLogger/dvclive_run/checkpoints/epoch=3-step=60-v2.ckpt`.
-4. **Deploy Inference**: Update `inference.py` with your model's checkpoint and launch your predictions into action with `streamlit run inference.py`.
+## Usage
+To run the project pipeline:
+1. Initialize DVC with `dvc init`
+2. Pull the data and run the pipeline with `dvc repro`. This command downloads the Chinook database, converts it to a graph format, and trains the GNN model.
+3. The training will produce a checkpoint model like `DvcLiveLogger\\dvclive_run\\checkpoints\\epoch=3-step=60-v2.ckpt` To run inference on the model, update `inference.py` with the checkpoint path.
+4. Run inference: `streamlit run inference.py`
 
 Embark on a journey with us as we demonstrate the untapped potential of GNNs to revolutionize the analysis of relational databases, transcending traditional boundaries and unlocking a new realm of possibilities.
 
