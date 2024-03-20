@@ -17,6 +17,9 @@ Leveraging DVC pipelines, our workflow transitions from downloading the Chinook 
 
 With 11 intricately related tables, the Chinook database serves as an ideal candidate to illustrate how graph-based analysis can unravel the complex interconnections within a digital media store's dataset, offering new perspectives and insights that conventional analysis might overlook.
 
+### Related Slides
+https://docs.google.com/presentation/d/e/2PACX-1vTzzX1VYpXD4L7Is9gh3nP_NTyRdW3u1XJQBtRiTZwK806RNnWcm-2zgA5RhBDcm8AsYVShIYe75Pwk/pub?start=false&loop=false&delayms=3000
+
 ### Requirements
 **For CPU:**
 `pip install -r requirements_cpu.txt`
